@@ -1,0 +1,86 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Basics
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------Advantages of Microservices
+Advantages of Microservices
+    - Scalability: Each service can be scaled independently based on demand.
+    - Fault Isolation: Failures in one service wouldn't affect other services much.
+    - Technology Agnostic: Different services can be written in different programming languages.
+    - Faster time to market: Smaller, focused teams can develop, test, and deploy services independently.
+
+Disadvantages of Microservices
+    - Increased complexity: Managing multiple services increases complexity.
+    - Inter-service communication: Network latency and failures can affect service interactions.
+    - Data management: Ensuring data consistency across services can be difficult.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Considerations When Designing REST APIs
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-> Security:
+    - Use OAuth2 or mutual TLS
+    - Input validation & rate limiting
+    - Sensitive data masking & logging control
+
+-> Performance & Pagination:
+    - Limit large responses with pagination (limit and offset)
+    - Use GZIP compression for responses
+
+-> Error Handling:
+    - Standardize error messages (use HTTP status codes, error codes, and messages)
+
+-> Monitoring:
+   - Include tracing (e.g., correlation IDs)
+   - Log API usage & failures for audit
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Microservices patterns
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1) Saga Pattern
+
+-> In microservices, ACID transactions are difficult to perform as it could span over multiple different components or services.
+Saga pattern resolves this issue by braking transactions into sequence of local transactions.
+
+    - Here, each service performs its local transaction and publishes an event or invokes the next step.
+    - If a failure occurs, it triggers a series of compensating transactions to undo the changes made by preceding steps.
+
+-> Two types of Saga Implementations
+    a) Choreography (Event Based and decentralized)
+        - Services coordinate via events using Kafka or other MQs.
+        - There's no centralized coordinator.
+        - Each service listens to the previous one's event and performs its task.
+        - Though it has high scalability, it is hard to manage and debug.
+    b) Orchestration (Command Based and Centralized)
+        - A centralized orchestrator tells each service what to do.
+        - Services execute commands and report back success/failure.
+        - It has centralized control and hence, it's easier to monitor and control
+        - As it has a central coordinator, it has less potential of decoupling.
+
+-> Compensation transactions are like undo operations
+
+
+2) CQRS (Command Query Responsibility Segregation)
+
+-> Command Query Responsibility Segregation, and it's a design pattern commonly used in microservices to separate the responsibilities of reading (queries) and writing (commands) data.
+
+-> Instead of having a single model or service handle both reads and writes, CQRS splits the system into:
+
+    a) Command Side (Write Model):
+        - Handles commands like create, update and delete.
+        - Contains business logic and validation
+    b) Query Side (Read Model):
+        - Handles queries to fetch data
+
+-> Scalability: It allows you to independently scale read and write workloads.
+
+-> Performance Optimization: Read models can be tailored for specific query patterns without affecting writes.
+
+3) Circuit Breaker Pattern
+
+-> It is resilience pattern used in microservices to prevent cascading failures and enable graceful degradation when a service is unavailable or failing.
+-> In microservices architecture - services talk to each other over network. If one service is slow or down, continuous retries could exhaust system resources.
+-> The Circuit Breaker has three core states: Closed, Open, and Half-Open, each governing how calls to a dependent service are handled.
+    - Closed State - Normal operation: All requests to the service are allowed.
+    - Open State - Instead of attempting remote calls, it immediately fails fast or returns a fallback response. It prevents system overload and allow the failing service time to recover.
+    - Half Open State - Trial phase: Only a limited number of requests are allowed through (e.g., 1 or 5). It is used to check if the service has recovered. If these trial calls succeed,
+      the circuit transitions to Closed (normal operation). If even one call fails, it reverts to Open and the timeout resets.
+
+-> Resilience4j – Spring Boot. Example - resilience4j.circuitbreaker, @CircuitBreaker(name = "userService", fallbackMethod = "fallbackUser")

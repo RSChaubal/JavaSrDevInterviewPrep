@@ -1,0 +1,41 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Java Memory Model and Garbage Collection Basics
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-> The young (Eden) generation is where newly created objects are allocated.
+-> It’s usually small (100-500MB) and also has two survivor spaces.
+-> The old generation is where older or aged objects are stored — these are typically long-lived objects. This space is much larger than the young generation.
+-> The collector continuously tracks the fullness of the young generation and triggers minor collections during which live objects are moved to one of the survivor spaces and dead ones removed.
+-> If an object has survived a certain number of minor GCs, the collector moves it to the old generation.
+-> When the old space is considered full, a major GC happens and dead objects are removed from the old space.
+-> During each of these GCs, there are stop-the-world phases during which nothing else happens — the application can’t service any requests. We call this pause time.
+-> We should aim to keep the GC runtime overhead as low as possible.
+-> Theoretically, the larger the memory, the more objects can be kept before collection, leading to longer GC times.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+GC Algos
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-> The serial collector uses a single thread to perform all the garbage collection work. It’s selected by default on certain small hardware and operating system configurations.
+    - It’s suitable for applications with small datasets.
+-> ParallelGC collector uses multiple threads to speed up garbage collection. In Java version 8 and earlier, it’s the default for server-class machines.
+    - It’s more efficient for larger data sets than serial GC.
+    - It provides high overall throughput.
+    - Applications incur long pause times during stop-the-world operations.
+-> Concurrent Mark Sweep - It performs some expensive work concurrently with the application.
+    - CMS is mostly a concurrent collector
+    - It’s designed for low latency by eliminating the long pause associated with the full GC of parallel and serial collectors.
+    - When an object is created, its mark bit is set to 0(false).
+    - In the Mark phase, we set the marked bit for all the reachable objects (or the objects which a user can refer to) to 1(true).
+    - As the name suggests it “sweeps” the unreachable objects i.e. it clears the heap memory for all the unreachable objects.
+    - All those objects whose marked value is set to false are cleared from the heap memory
+    - It becomes relatively inefficient when data sets reach gigantic sizes or when collecting humongous heaps.
+-> G1 (Garbage-First)
+    - Available since Java 9
+    - G1 uses multiple background GC threads to scan and clear the heap just like CMS.
+    - It tracks previous application behavior and GC pauses to achieve predictability.
+    - It’s very efficient with gigantic datasets.
+-> Z Garbage Collector
+    - It was introduced in Java 11 as an experimental GC implementation.
+    - ZGC is a scalable low latency garbage collector.
+    - It manages to keep low pause times on even multi-terabyte heaps.

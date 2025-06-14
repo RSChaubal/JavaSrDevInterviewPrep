@@ -1,0 +1,69 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CAP Theorem
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+The CAP Theorem (Consistency, Availability, Partition Tolerance) states that a distributed system can only guarantee two out of the following three properties at the same time:
+
+-> Consistency (C) - Every read receives the most recent write or an error.
+-> Availability (A) - Every request receives a (non-error) response, without guarantee that it contains the most recent write.
+-> Partition Tolerance (P) - The system continues to operate despite network partitions (communication breakdown between nodes).
+
+CP/AP
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SOLID Principles
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-> Single Responsibility: A class should have only one reason to change.
+-> Open Closed Principle: Software entities should be open for extension but closed for modification.
+-> Listkov's Substitution Principle: Objects of a superclass should be replaceable with objects of its subclasses without altering the correctness of the program.
+-> Interface Segregation Principle: Clients should not be forced to depend on interfaces they do not use. Prefer multiple small interfaces over one large general-purpose interface.
+-> Dependency Inversion Principle: High-level modules should not depend on low-level modules. Both should depend on abstractions
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ACID properties
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-> Atomic - All or nothing — the entire transaction succeeds or fails.
+-> Consistent - The database remains in a valid state before and after the transaction.
+-> Isolated - Concurrent transactions do not interfere with each other.
+-> Durable - Once a transaction is committed, it remains so even after a crash.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DB Isolation levels
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Read Uncommitted - Dirty reads (least isolated).
+Read Committed - No dirty reads; still allows non-repeatable reads - the same SELECT may return different results if data is modified by another transaction between reads
+Repeatable Reads - Phantom reads - if new rows are inserted that match a query's WHERE clause, they can appear in future reads.
+Serializable - Perfect but slow - Fully isolated; prevents all anomalies (most strict).
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DB Indexes
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-> B-Tree Index (Balanced Tree)
+    - Default index type in most RDBMS (PostgreSQL, MySQL, Oracle, etc.)
+    - Optimized for range queries and equality lookups.
+
+-> Hash Index
+    - Uses a hash table for fast lookups.
+    - Extremely fast for equality comparisons, but not good for range queries.
+
+-> Bitmap Index
+    - Uses bitmap vectors (0s and 1s) for values.
+    - Efficient for columns with low cardinality (few distinct values), like gender, status.
+
+-> Composite Index (Multi-column Index)
+    - Index on multiple columns.
+
+-> Unique Index
+    - Enforces uniqueness of values.
+    - Also improves lookup speed.
+
+-> Full-text Index
+    - Specialized for text searching (LIKE '%word%', natural language).
+    - Used in search engines.
+
+-> Spatial Index
+   Used for geographic data (GIS), such as points, polygons.

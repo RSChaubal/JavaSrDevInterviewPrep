@@ -1,0 +1,18 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Basics
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-> Distributed caching is required when:
+    - Scalability Needs - Applications grow beyond a single server's capacity
+    - High Availability - A centralized cache can be a single point of failure. Distributed caches are fault tolerant
+    - Load reduction on Backend - Distributed cache reduces repeated computations or expensive database calls
+    - Concurrent Access - Multiple app instances can have fast, shared access to cached data
+
+-> Disadvantages of Distributed Caching:
+    - Increased complexity with more parts to manage, deploy and scale, with increased cost.
+    - Consistency challenges - May serve stale data unless proper refresh logic is applied.
+
+-> Distributed caching should not be applied when:
+    - Having a small-scale or a Monolithic application - A local in-memory cache would be simpler and sufficient.
+    - Highly volatile data - If the data changes too frequently
+    - Strong consistency requirement - For critical data, database reads are safer than potentially stale cache reads.

@@ -1,0 +1,12 @@
+ConcurrentHashMap is designed for High Concurrency and Thread Safety.
+
+- In Java 7 it achieves this by:
+    a) Segmented Locking: The map is divided into segments, each with its own lock, allowing multiple threads to operate on different segments concurrently.
+    b) Fine-grained Locking: Operations like Put are synchronized at segment level and not at entire map level, reducing contention.
+    c) Atomic Operations: Operations such as putIfAbsent and compute are atomic in nature and they ensure thread safe updates without locking.
+
+- In Java 8 it achieves this by:
+    a) CAS (Compare and Swap) approach --> There is no locking except if there's a collision or resizing.
+    b) Put Operation - If the bucket is empty, a new node is inserted directly without locking using - casTabAt(), which is an atomic operation.
+                     - If there's already an entry in the bucket then CAS fails and falls back to fine-grained locking.
+                     - This hybrid approach improves performance under high contention.
