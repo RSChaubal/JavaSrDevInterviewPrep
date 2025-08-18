@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * https://leetcode.com/problems/3sum/description/
+/*
+ * <a href="https://leetcode.com/problems/3sum/description/">...</a>
  *
  * Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
  *
@@ -108,15 +108,15 @@ public class ThreeVariableSum {
 }
 
 
-/**
- * Complexity
- *
- * Sorting: O(n log n)
- * Outer loop: O(n)
- * Two-pointer search: O(n)
- * -------------------------------
- * Total time complexity: O(n²)
- *
- * Space: O(1) (ignoring output).
- *
+/*
+  Complexity
+
+  Sorting: O(n log n)
+  Outer loop: O(n)
+  Two-pointer search: O(n)
+  -------------------------------
+  Total time complexity: O(n²)
+
+  Space: O(1) (ignoring output).
+
  */

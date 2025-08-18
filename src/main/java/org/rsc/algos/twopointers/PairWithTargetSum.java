@@ -1,28 +1,26 @@
 package org.rsc.algos.twopointers;
 
 /*
-*
-
-Core Idea
-You maintain two pointers that can move in the same or opposite directions, depending on the problem:
-
-1. Start and End Pointers
-Use when the array is sorted and you're looking for pairs that meet a condition.
-
-Example: left = 0, right = n - 1
-
-Move them inward based on conditions.
-
-2. Fast and Slow Pointers (Variant)
-Use when traversing at different speeds to detect patterns like duplicates, cycles, etc.
-
-*
-*/
+ *
+ * Core Idea
+ * You maintain two pointers that can move in the same or opposite directions, depending on the problem:
+ *
+ * 1. Start and End Pointers
+ * Use when the array is sorted, and you're looking for pairs that meet a condition.
+ *
+ * Example: left = 0, right = n - 1
+ *
+ * Move them inward based on conditions.
+ *
+ * 2. Fast and Slow Pointers (Variant)
+ * Use when traversing at different speeds to detect patterns like duplicates, cycles, etc.
+ *
+ */
 
 
 import java.util.Arrays;
 
-/**
+/*
  * https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/
  *
  * Given a 1-indexed array of integers numbers that is already sorted in non-decreasing order, find two numbers such that
