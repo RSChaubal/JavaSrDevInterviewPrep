@@ -20,6 +20,8 @@ Use when traversing at different speeds to detect patterns like duplicates, cycl
 */
 
 
+import java.util.Arrays;
+
 /**
  * https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/description/
  *
@@ -58,9 +60,7 @@ public class PairWithTargetSum {
 
         int [] ans = twoSum(arr, sum) ;
 
-        for (int i : ans) {
-            System.out.print(i + " ") ;
-        }
+        System.out.print(Arrays.toString(ans)) ;
     }
 
 
