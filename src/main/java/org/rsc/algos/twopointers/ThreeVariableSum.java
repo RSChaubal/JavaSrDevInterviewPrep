@@ -106,3 +106,17 @@ public class ThreeVariableSum {
         return finalTripletsList ;
     }
 }
+
+
+/**
+ * Complexity
+ *
+ * Sorting: O(n log n)
+ * Outer loop: O(n)
+ * Two-pointer search: O(n)
+ * -------------------------------
+ * Total time complexity: O(n²)
+ *
+ * Space: O(1) (ignoring output).
+ *
+ */
