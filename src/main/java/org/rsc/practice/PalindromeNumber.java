@@ -28,9 +28,9 @@ public class PalindromeNumber {
         long reversed = 0 ;
         long original = number ;
         while (number > 0) {
-            long lastDigit = number % 10 ; // Extract the last digit
+            long lastDigit = number % 10 ; // Extract last digit from the given number
             reversed = reversed * 10 + lastDigit ;
-            number /= 10 ;
+            number /= 10 ; // Remove last digit from the given number
         }
 
         return reversed == original ;
