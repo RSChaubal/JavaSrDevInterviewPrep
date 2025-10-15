@@ -1,0 +1,167 @@
+
+# Java Memory Management and Garbage Collection Notes
+
+## Serializable
+
+- It is a marker interface, meaning it has no methods.
+- The control resides with the JVM, which automatically serializes all non-transient fields.
+- Performance is slow due to reflection.
+- `writeObject` and `readObject` methods, along with the `transient` keyword, offer customization options.
+
+## Externalizable
+
+- This interface is not a marker interface and requires overriding two methods: `writeExternal` and `readExternal`.
+- It allows for better performance as it does not involve reflection.
+- It offers maximum customization by allowing selective serialization of fields.
+
+## ReentrantLock
+
+- It provides a flexible synchronization framework compared to the traditional `synchronized` keyword.
+- A thread that holds a lock can acquire it again without blocking itself. This is useful in scenarios where a method that already holds a lock needs to call another method that requires the same lock.
+- The lock maintains a hold count, incrementing it each time it is acquired and decrementing it once it is released.
+- Unlike the `synchronized` keyword, `ReentrantLock` requires explicit locking and unlocking.
+- **Timed Lock waiting:** `tryLock(long timeout, TimeUnit)`
+- **Multiple Condition Variables:** Allows creating new conditions associated with a single lock.
+
+## ReentrantReadWriteLock
+
+- `ReadWriteLock lock = new ReentrantReadWriteLock();`
+- `Lock writeLock = lock.writeLock();`
+- `Lock readLock = lock.readLock();`
+
+## Class Loader Hierarchy
+
+- It follows the delegation model (Parent-first approach).
+- Bootstrap -> Extension -> Application -> Custom
+- `rt.jar` -> `ext/lib` -> `cp/classpath` -> `ClassLoader`
+- Each classloader, starting from the bottom, delegates the request to its parent.
+- If the parent finds the class, it returns it. If the parent doesn't find it, then the classloader tries to load it itself.
+- This flow prevents the core classes from being overridden by application classes.
+
+## JVM Memory Management Model
+
+- **JVM Memory Areas:**
+    - Method Area
+    - Heap
+    - Stack (per thread)
+    - PC Register (per thread)
+    - Native method Stack
+- **Heap:**
+    - This is where all objects and instances live.
+    - It is a common area for all threads.
+    - The garbage collector runs here to free all unused memory.
+    - It is the largest memory area in the JVM.
+    - **Young Generation:** Eden space, Survivor 0, Survivor 1
+    - **Old Generation:** Long-living objects promoted from the Young Generation.
+    - **Metaspace:** Stores class metadata (replaces PermGen in Java 8+).
+- **Stack:**
+    - Each thread has its own stack.
+    - No GC is needed.
+    - Memory is freed when a method returns.
+    - Stores local variables.
+- **Program Counter (PC) Register:**
+    - Each thread has its own register.
+    - It stores the address of the current instruction being executed.
+    - It is essential for thread execution.
+- **Native Method Stack:**
+    - Used when Java calls native code (via JNI).
+    - Each thread has its own native stack.
+
+## AtomicInteger vs LongAdder
+
+- **Internal Design:**
+    - **AtomicInteger:** Backed by a single variable. Uses Compare & Swap (CAS) for all updates. All threads refer to the same location.
+    - **LongAdder:** Uses an array of counters. Each thread updates a different cell of this array to reduce contention. On retrieval (`sum()`), all cells are combined.
+- **Performance:**
+    - **AtomicInteger:** Better for low contention scenarios. It has better memory management.
+    - **LongAdder:** Better for high contention scenarios (many threads) because it reduces CAS collisions and scales better.
+- **Read Semantics:**
+    - **AtomicInteger:** `get()` gives a precise, up-to-date value.
+    - **LongAdder:** `sum()` gives an approximate value but is typically accurate enough for most cases.
+
+## Garbage Collection (GC) Algorithms
+
+- Java handles memory cleanup automatically via Garbage Collection. An object becomes eligible for GC when no active references point to it.
+- **Strategies:**
+    - **Generational GC:** The JVM uses different strategies for young vs. old objects.
+        - **Minor GC (Young Generation):** Uses copying GC (fast).
+        - **Major GC (Old Generation):** Uses Mark-Sweep-Compact.
+        - It provides a good balance of throughput and pause time.
+    - **Copying GC (Used for Young Generation - Minor GC):**
+        - It splits memory into two equal regions: "from" space and "to" space.
+        - It allocates new objects in the "from" space.
+        - When GC runs, it copies live objects to the "to" space and clears the "from" space completely.
+    - **Mark-Sweep-Compact (Used for Old Generation - Major GC):**
+        - **Mark:** Starts from roots and marks all reachable objects.
+        - **Sweep:** Goes through the heap and clears all unmarked objects.
+        - **Compact:** The collector then compacts memory so that live objects are contiguous.
+
+- **Algorithms:**
+    - **Serial GC:** Stop-the-world, single-threaded. Works with one thread for both minor and major GC. Best for small, single-core applications.
+    - **Parallel GC (Batch Jobs):** Uses multiple threads for GC. Faster than Serial GC. Still stop-the-world but parallelized. High throughput. Best for batch jobs.
+    - **CMS (Concurrent Mark Sweep) (Deprecated):** Performs most GC concurrently with application threads. Aims to reduce pause times. Low pause times but increases CPU overhead.
+    - **G1 (Garbage First) GC (Default since Java 9):** The heap is divided into many regions. G1 works on regions with the most garbage first. Performs concurrent marking. Pause times are less than 50 ms.
+    - **ZGC (Low Latency GC):** Pauses are typically for less than 10 ms, even on a TB size heap. Most GC work is concurrent. Not supported on older JVMs.
+    - **Shenandoah GC (Alternative Low Latency):** Pause times are less than 10 ms. Performs most GC concurrently. Also performs compaction of memory. It has slightly lower throughput. Suits real-time systems.
+
+## ConcurrentHashMap
+
+- `ConcurrentHashMap` is designed for high concurrency and thread safety.
+- **Java 7:** Concurrency is achieved by:
+    - **Segmented Locking:** The map is divided into segments, each with its own lock, allowing multiple threads to operate on different segments concurrently.
+    - **Fine-grained locking:** Operations like `put` are synchronized at the segment level and not the entire map level, reducing contention.
+    - **Atomic Operations:** Operations are atomic in nature and they ensure thread-safe updates.
+- **Java 8:** Concurrency is achieved by:
+    - **CAS (Compare & Swap) approach:** There is no locking except when there are collisions.
+    - **Put operation:** There is no locking if the bucket is empty. If there's already an entry, the CAS fails and the algorithm falls back to fine-grained locking. This hybrid approach helps improve the overall performance.
+
+## Thread Pools
+
+- A thread pool is a managed collection of worker threads that can execute tasks asynchronously.
+- Instead of creating a new thread for any task, you can reuse one from a pool of threads to execute your task.
+- Benefits: Better performance, centralized task management, no overhead of thread creation.
+- **Core Class:** `ThreadPoolExecutor`
+- Implementations: `FixedThreadPool`, `CachedThreadPool`, `SingleThreadExecutor`, `ScheduledThreadPool`, and `ForkJoinPool` (introduced in Java 7).
+- **Flow:**
+    1. Submit a task to execute.
+    2. Check if there are free core threads.
+    3. If all core threads are busy, enqueue the task.
+    4. If the queue is full and the pool size is less than the max pool size, create a new thread.
+    5. If the queue is full and the current pool size is equal to the max pool size, reject the task.
+- **`RejectedExecutionHandler`:**
+    - Throws an exception, rejects the task.
+    - Discards the task.
+    - Discards the oldest task.
+
+- **Work-stealing algorithm:**
+    - Each worker thread in this pool has its own deque.
+    - A thread executes a task from the top of its deque.
+    - If any thread finishes a task early, it will steal a task from the bottom of another thread's deque.
+    - This keeps all the threads busy and maximizes CPU utilization.
+
+## General Concepts
+
+- **CAP Theorem:** Consistency, Availability, Partition tolerance
+- **ACID:** Atomic, Consistent, Isolation & Durable
+- **DB Isolation levels:**
+    - Read uncommitted (Dirty reads)
+    - Read committed
+    - Repeatable reads
+    - Serializable reads (most strict)
+- **DB Indexes:**
+    - **B-Tree Index:** Default Index Type. Optimized for range SQL queries.
+    - **Hash Index:** Uses a hash table for fast lookups. Extremely fast for equality comparison.
+    - **Bitmap:** e.g., Geographic data.
+    - **Spatial:** Enforces uniqueness.
+    - **Unique:** Combination of different columns.
+    - **Composite:** Specialized for full searching.
+    - **Full text:** Used in Search engines.
+
+## Immutable class creation
+
+- Mark the class as `final`.
+- Make all fields `private` and `final`.
+- Do not provide setter methods.
+- Initialize fields only in the constructor.
+- For objects such as a list, make a copy in the constructor.
+- When returning objects, return a copy from the method.
